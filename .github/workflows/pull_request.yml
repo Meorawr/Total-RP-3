@@ -38,7 +38,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: totalRP3-PR${{ github.event.number }}
+          name: totalRP3-PR-${{ github.event.number }}
           path: .release/
 
       - name: Create Classic Package
@@ -48,7 +48,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: totalRP3-PR${{ github.event.number }}-classic
+          name: totalRP3-PR-${{ github.event.number }}-classic
           path: .release/
 
       - name:  Send Webhook Notification
