@@ -25,7 +25,7 @@ local addOnName, TRP3_API = ...;
 -- Note: This table will be overwritten in totalRP3/core/impl/globals.lua
 -- It is here only so that DEBUG_MODE is available from the start
 TRP3_API.globals = {
-    --@debug@
+	--@debug@
 
 	-- Debug mode is enable when the add-on has not been packaged by Curse
 	DEBUG_MODE = true,

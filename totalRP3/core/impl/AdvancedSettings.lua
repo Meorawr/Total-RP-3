@@ -29,7 +29,6 @@ TRP3_API.ADVANCED_SETTINGS_STRUCTURE = {
 	id = "main_config_zzz_advanced_settings",
 	elements = {}
 }
-A=1
 
 TRP3_API.ADVANCED_SETTINGS_KEYS = {
 	PROFILE_SANITIZATION = "register_sanitization",
