@@ -16,11 +16,19 @@ jobs:
         uses: Total-RP/packager@master
         with:
           args: -p 75973 -w 24113
+        env:
+          CF_API_KEY:     ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH:   ${{ secrets.GITHUB_TOKEN }}
+          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
 
       - name: Create Classic Package
         uses: Total-RP/packager@master
         with:
           args: -p 335857 -w 25153 -g classic
+        env:
+          CF_API_KEY:     ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH:   ${{ secrets.GITHUB_TOKEN }}
+          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
 
       - name:  Send Webhook Notification
         if:    failure()
