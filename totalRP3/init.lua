@@ -48,6 +48,7 @@ TRP3_API.utils = {};
 
 -- Get a new instance of the Ellyb library
 TRP3_API.Ellyb = Ellyb:GetInstance(addOnName);
+a=1
 
 --[===[@non-debug@
 
