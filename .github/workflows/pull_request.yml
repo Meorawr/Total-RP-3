@@ -54,21 +54,20 @@ jobs:
           name: totalRP3-PR${{ github.event.number }}-classic
           path: .release/
 
-      - name:  Send Webhook Notification
-        shell: bash
-        if:    always()
-        run: |
-          git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
-          bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
-        env:
-          JOB_STATUS:    ${{ job.status }}
-          WEBHOOK_URL:   ${{ secrets.WEBHOOK_URL }}
-          HOOK_OS_NAME:  ${{ runner.os }}
-          WORKFLOW_NAME: ${{ github.workflow }}
+      # - name:  Send Webhook Notification
+      #   shell: bash
+      #   if:    always()
+      #   run: |
+      #     git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
+      #     bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
+      #   env:
+      #     JOB_STATUS:    ${{ job.status }}
+      #     WEBHOOK_URL:   ${{ secrets.WEBHOOK_URL }}
+      #     WORKFLOW_NAME: ${{ github.workflow }}
 
-      # - name: Send Status to Discord
-      #   uses: nebularg/actions-discord-webhook@v1
-      #   with:
-      #     webhook_url: ${{ secrets.WEBHOOK_URL }}
-      #     status: ${{ job.status }}
-      #   if: failure()
+      - name: Send Status to Discord
+        uses: nebularg/actions-discord-webhook@v1
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          status:      ${{ job.status }}
+        if: always()
