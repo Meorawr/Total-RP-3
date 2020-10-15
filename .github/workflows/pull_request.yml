@@ -14,4 +14,4 @@ jobs:
         uses: meorawr/actions-luacheck@feature/annotations
         with:
           args: "--no-color -q"
-          annotate: error
+          annotate: warning
