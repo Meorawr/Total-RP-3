@@ -6,15 +6,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Check Destination Branch
         uses: marocchino/sticky-pull-request-comment@v1.4.0
         if:   github.base_ref == 'refs/heads/master'
         with:
+          message:      Warning - This pull request is targeting master.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          message: Warning - This pull request is targeting master.
+
+      - uses: actions/setup-python@v2
+      - uses: actions/setup-ruby@v1
+      - uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install editorconfig-checker
 
       - name: Run Luacheck
         uses: meorawr/actions-luacheck@feature/annotations # TODO: Go back to the original repo if the PR gets merged.
@@ -23,9 +29,7 @@ jobs:
           annotate: error
 
       - name: Run editorconfig-checker
-        run: |
-          pip install editorconfig-checker
-          editorconfig-checker -no-color $(git ls-files '*.lua' '*.sh' '*.xml' ':!:totalRP3/libs/**/*' ':!:totalRP3/tools/Locale.lua')
+        run:  editorconfig-checker -no-color $(git ls-files '*.lua' '*.sh' '*.xml' ':!:totalRP3/libs/**/*' ':!:totalRP3/tools/Locale.lua')
 
       - name: Create Retail Package
         uses: Total-RP/packager@master
@@ -47,9 +51,21 @@ jobs:
           name: totalRP3-PR${{ github.event.number }}-classic
           path: .release/
 
-      - name: Send Status to Discord
-        uses: nebularg/actions-discord-webhook@v1
-        with:
-          webhook_url: ${{ secrets.WEBHOOK_URL }}
-          status: ${{ job.status }}
-        if: failure()
+      - name: Send Webhook Notification
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          HOOK_OS_NAME: ${{ runner.os }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+        run: |
+          git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
+          bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
+        shell: bash
+
+      # - name: Send Status to Discord
+      #   uses: nebularg/actions-discord-webhook@v1
+      #   with:
+      #     webhook_url: ${{ secrets.WEBHOOK_URL }}
+      #     status: ${{ job.status }}
+      #   if: failure()
