@@ -6,12 +6,50 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check Destination Branch
+        uses: marocchino/sticky-pull-request-comment@v1.4.0
+        if:   github.base_ref == 'refs/heads/master'
         with:
-          fetch-depth: 500
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: Warning - This pull request is targeting master.
 
       - name: Run Luacheck
-        uses: meorawr/actions-luacheck@feature/annotations
+        uses: meorawr/actions-luacheck@feature/annotations # TODO: Go back to the original repo if the PR gets merged.
         with:
-          args: "--no-color -q"
-          annotate: warning
+          args: --no-color -q
+          annotate: error
+
+      - name: Run editorconfig-checker
+        run: |
+          pip install editorconfig-checker
+          editorconfig-checker -no-color $(git ls-files '*.lua' '*.sh' '*.xml' ':!:totalRP3/libs/**/*' ':!:totalRP3/tools/Locale.lua')
+
+      - name: Create Retail Package
+        uses: Total-RP/packager@master
+        with:
+          args: -d -z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: totalRP3-PR${{ github.event.number }}
+          path: .release/
+
+      - name: Create Classic Package
+        uses: Total-RP/packager@master
+        with:
+          args: -d -z -g classic
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: totalRP3-PR${{ github.event.number }}-classic
+          path: .release/
+
+      - name: Send Status to Discord
+        uses: nebularg/actions-discord-webhook@v1
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          status: ${{ job.status }}
+        if: failure()
