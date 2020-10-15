@@ -58,5 +58,6 @@ jobs:
           bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
         env:
           JOB_STATUS:    ${{ job.status }}
+          HOOK_OS_NAME:  ${{ runner.os }}
           WEBHOOK_URL:   ${{ secrets.WEBHOOK_URL }}
           WORKFLOW_NAME: ${{ github.workflow }}
